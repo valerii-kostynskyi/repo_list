@@ -16,7 +16,7 @@ class AppBinding extends Bindings {
 
     // Repository
     Get.put<HomeRepository>(
-      HomeRepositoryImpl(),
+      HomeRepositoryImpl(Get.find()),
       permanent: true,
     );
   }

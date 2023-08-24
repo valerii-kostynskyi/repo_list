@@ -1,17 +1,18 @@
+import 'package:repo_list/domain/entity/repositry_entity.dart';
 import 'package:repo_list/util/json_extension.dart';
 
-class RepositoryModel {
-  final int id;
-  final String name;
-  final String description;
-  final int stargazersCount;
-
+class RepositoryModel extends RepositoryEntity {
   RepositoryModel({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.stargazersCount,
-  });
+    required int id,
+    required String name,
+    required String description,
+    required int stargazersCount,
+  }) : super(
+          id: id,
+          name: name,
+          description: description,
+          stargazersCount: stargazersCount,
+        );
 
   factory RepositoryModel.fromJson(Map<String, dynamic> json) {
     return RepositoryModel(
