@@ -1,27 +1,25 @@
 import 'package:hive/hive.dart';
-import 'package:repo_list/data/model/search_story_model.dart';
 
-class SearchStoryListModelAdapter extends TypeAdapter<List<SearchStoryModel>> {
+class SearchStoryAdapter extends TypeAdapter<List<String>> {
   @override
   final int typeId = 2;
 
   @override
-  List<SearchStoryModel> read(BinaryReader reader) {
+  List<String> read(BinaryReader reader) {
     final length = reader.readByte();
-    final List<SearchStoryModel> searchQueries = [];
+    final List<String> searchQueries = [];
     for (var i = 0; i < length; i++) {
-      final query = reader.readString();
-      searchQueries.add(SearchStoryModel(query: query));
+      final searchRequest = reader.readString();
+      searchQueries.add(searchRequest);
     }
     return searchQueries;
   }
 
   @override
-  void write(BinaryWriter writer, List<SearchStoryModel> obj) {
+  void write(BinaryWriter writer, List<String> obj) {
     writer.writeByte(obj.length);
     for (var i = 0; i < obj.length; i++) {
-      writer.writeString(obj[i].query);
-
+      writer.writeString(obj[i]);
     }
   }
 }

@@ -27,4 +27,7 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
   Future<List<RepositoryEntity>> getFavoritesList() {
     return _localDataSource.getFavoritesList();
   }
+
+  @override
+  Stream<int> get favoriteChanges => _localDataSource.favoriteChanges;
 }

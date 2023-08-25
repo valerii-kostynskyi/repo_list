@@ -28,8 +28,8 @@ class FavoriteScreen extends GetView<FavoriteController> {
             count: controller.repositoryListRx.length,
             onBuildItem: (index) => ItemRepositoryWidget(
               repositoryItem: controller.repositoryListRx[index],
-              onTap: () =>
-                  controller.toggleFavorite(controller.repositoryListRx[index]),
+              onTap: () => controller
+                  .removeFromFavorite(controller.repositoryListRx[index]),
             ),
           ),
         ),

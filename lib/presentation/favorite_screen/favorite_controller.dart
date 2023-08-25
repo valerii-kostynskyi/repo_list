@@ -17,7 +17,8 @@ class FavoriteController extends GetxController {
   getFavoritesList() async {
     isLoading.value = true;
     try {
-      final favRepositories = await _favoriteRepository.getFavoritesList();
+      final List<RepositoryEntity> favRepositories =
+          await _favoriteRepository.getFavoritesList();
       repositoryListRx.addAll(favRepositories);
     } catch (e) {
       print("Error fetching favorite repositories: $e");
@@ -26,5 +27,13 @@ class FavoriteController extends GetxController {
     }
   }
 
-  toggleFavorite(RepositoryEntity repository) {}
+  removeFromFavorite(RepositoryEntity repository) async {
+    try {
+      repositoryListRx.remove(repository);
+      await _favoriteRepository.removeFavoriteRepository(
+          repository: repository);
+    } catch (e) {
+      print("Error removing from favorites: $e");
+    }
+  }
 }

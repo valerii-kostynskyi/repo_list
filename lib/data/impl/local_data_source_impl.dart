@@ -1,21 +1,34 @@
+import 'dart:async';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:repo_list/data/db_adapter/repository_model_adapter.dart';
+import 'package:repo_list/data/db_adapter/search_story_model_adapter.dart';
 import 'package:repo_list/data/local_data_source.dart';
 import 'package:repo_list/domain/entity/repositry_entity.dart';
 
 class LocalDataSourceImpl implements LocalDataSource {
   static const String _favorites = 'Favorites';
-  static const String _searchHistory = 'SearchHistory';
+  static const _searchHistoryKey = 'searchHistoryKey';
+  final StreamController<int> _favoritesStreamController =
+      StreamController<int>.broadcast();
 
   Box<RepositoryEntity>? _favoritesBox;
-  Box<String>? _searchHistoryBox;
+  Box<List<String>>? _searchHistoryBox;
 
   @override
   Future init() async {
     await Hive.initFlutter();
     Hive.registerAdapter(RepositoryModelAdapter());
+    Hive.registerAdapter(SearchStoryAdapter());
     _favoritesBox = await Hive.openBox<RepositoryEntity>(_favorites);
-    _searchHistoryBox = await Hive.openBox<String>(_searchHistory);
+    _favoritesBox!.watch().listen((event) {
+      _favoritesStreamController.add(event.key as int);
+    });
+    _searchHistoryBox = await Hive.openBox<List<String>>(_searchHistoryKey);
+  }
+
+  void dispose() {
+    _favoritesStreamController.close();
   }
 
   @override
@@ -46,30 +59,47 @@ class LocalDataSourceImpl implements LocalDataSource {
   }
 
   @override
-  Future<List<String>> getSearchHistory() async {
-    return _searchHistoryBox?.values.toList() ?? [];
-  }
-
-  @override
   Future<void> addToSearchHistory(String searchQuery) async {
     if (_searchHistoryBox != null) {
-      final historyList = _searchHistoryBox!.values.toList();
-      historyList.remove(searchQuery);
+      if (searchQuery.trim().isEmpty) {
+        return;
+      }
+
+      final historyList =
+          _searchHistoryBox!.get(_searchHistoryKey, defaultValue: []);
+
+      historyList!.remove(searchQuery);
       historyList.insert(0, searchQuery);
 
       if (historyList.length > 5) {
         historyList.removeLast();
       }
 
-      await _searchHistoryBox!.clear();
-      await _searchHistoryBox!.addAll(historyList);
+      await _searchHistoryBox!.put(_searchHistoryKey, historyList);
+    }
+  }
+
+  @override
+  Future<List<String>> getSearchHistory() async {
+    try {
+      return _searchHistoryBox?.get(
+            _searchHistoryKey,
+            defaultValue: [],
+          ) ??
+          [];
+    } catch (e) {
+      print('Error fetching search history from Hive: $e');
+      return [];
     }
   }
 
   @override
   Future<void> clearSearchHistory() async {
     if (_searchHistoryBox != null) {
-      await _searchHistoryBox!.clear();
+      await _searchHistoryBox!.delete(_searchHistoryKey);
     }
   }
+
+  @override
+  Stream<int> get favoriteChanges => _favoritesStreamController.stream;
 }

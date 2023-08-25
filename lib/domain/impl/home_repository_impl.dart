@@ -43,8 +43,8 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<void> addToSearchHistory({required String query}) async {
-    await _localDataSource.addToSearchHistory(query);
+  Future<void> addToSearchHistory({required String searchRequest}) async {
+    await _localDataSource.addToSearchHistory(searchRequest);
   }
 
   @override

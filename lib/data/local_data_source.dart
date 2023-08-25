@@ -14,4 +14,6 @@ abstract class LocalDataSource {
   Future<void> addToSearchHistory(String searchQuery);
 
   Future<void> clearSearchHistory();
+
+  Stream<int> get favoriteChanges;
 }

@@ -11,6 +11,7 @@ class HomeController extends GetxController {
   final HomeRepository _homeRepository = Get.find();
   final FavoriteRepository _favoriteRepository = Get.find();
   final RxList<RepositoryEntity> repositoryListRx = RxList.empty();
+  final RxList<String> listSearch = RxList.empty();
   final RxBool isLoading = false.obs;
   final RxBool isAllLoaded = false.obs;
   final RxBool isFirstLoadingScreen = true.obs;
@@ -24,10 +25,28 @@ class HomeController extends GetxController {
   Timer? searchOnStoppedTyping;
   Duration duration = const Duration(milliseconds: 800);
 
+  StreamSubscription<int>? _favoritesSubscription;
+
   @override
   void onInit() {
     super.onInit();
     getRepositoryList();
+    getSearchRequstsList();
+
+    _favoritesSubscription =
+        _favoriteRepository.favoriteChanges.listen((int repoId) {
+      _updateFavoriteStatusForRepo(repoId);
+    });
+  }
+
+  @override
+  void onClose() {
+    _favoritesSubscription?.cancel();
+    super.onClose();
+  }
+
+  Future<void> getSearchRequstsList() async {
+    listSearch.value = await _homeRepository.getSearchHistory();
   }
 
   void getRepositoryList({
@@ -44,6 +63,8 @@ class HomeController extends GetxController {
       isLoading.value = false;
       return;
     }
+
+    _homeRepository.addToSearchHistory(searchRequest: searchText);
 
     _homeRepository
         .getHubbubList(
@@ -66,6 +87,7 @@ class HomeController extends GetxController {
 
   void search(String searchText) {
     isShowClearIcon.value = true;
+    isLoading.value = true;
     if (searchText.isEmpty) {
       isShowClearIcon.value = false;
       return;
@@ -90,10 +112,33 @@ class HomeController extends GetxController {
     focused.value = true;
   }
 
-  void toggleFavorite(RepositoryEntity repository)async {
+  void toggleFavorite(RepositoryEntity repository) async {
+    RepositoryEntity updatedRepo = RepositoryEntity(
+      id: repository.id,
+      name: repository.name,
+      description: repository.description,
+      isFavorite: !repository.isFavorite,
+      stargazersCount: repository.stargazersCount,
+    );
+
+    if (updatedRepo.isFavorite) {
+      await _favoriteRepository.addFavoriteRepository(repository: updatedRepo);
+    } else {
+      await _favoriteRepository.removeFavoriteRepository(
+          repository: updatedRepo);
+    }
+
     int index =
         repositoryListRx.indexWhere((element) => element.id == repository.id);
     if (index != -1) {
+      repositoryListRx[index] = updatedRepo;
+    }
+  }
+
+  void _updateFavoriteStatusForRepo(int repoId) {
+    int index = repositoryListRx.indexWhere((element) => element.id == repoId);
+    if (index != -1) {
+      RepositoryEntity repository = repositoryListRx[index];
       RepositoryEntity updatedRepo = RepositoryEntity(
         id: repository.id,
         name: repository.name,
@@ -101,16 +146,16 @@ class HomeController extends GetxController {
         isFavorite: !repository.isFavorite,
         stargazersCount: repository.stargazersCount,
       );
-
       repositoryListRx[index] = updatedRepo;
-
-      if (updatedRepo.isFavorite) {
-      await _favoriteRepository.addFavoriteRepository(repository: updatedRepo);
-    } else {
-      await _favoriteRepository.removeFavoriteRepository(repository: updatedRepo);
     }
+  }
 
-    }
+  void addValueToSearchBar(String value) {
+    searchController.text = value;
+    searchController.selection = TextSelection.fromPosition(
+      TextPosition(offset: searchController.text.length),
+    );
+    getRepositoryList(searchText: value);
   }
 
   void openFavoritePage() {

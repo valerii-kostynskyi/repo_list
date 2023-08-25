@@ -6,7 +6,7 @@ abstract class HomeRepository {
     required int offset,
   });
 
-  Future<void> addToSearchHistory({required String query});
+  Future<void> addToSearchHistory({required String searchRequest});
 
   Future<List<String>> getSearchHistory();
 

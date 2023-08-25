@@ -6,4 +6,6 @@ abstract class FavoriteRepository {
   Future<void> removeFavoriteRepository({required RepositoryEntity repository});
 
   Future<List<RepositoryEntity>> getFavoritesList();
+
+  Stream<int> get favoriteChanges;
 }
