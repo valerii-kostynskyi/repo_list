@@ -1,34 +1,33 @@
 import 'package:hive/hive.dart';
-import 'package:repo_list/data/db_adapter/adapter_type_id.dart';
-import 'package:repo_list/data/model/repository_model.dart';
+import 'package:repo_list/domain/entity/repositry_entity.dart';
 
-class RepoTypeAdapter extends TypeAdapter<RepositoryModel> {
+class RepositoryModelAdapter extends TypeAdapter<RepositoryEntity> {
   @override
-  int get typeId => AdapterTypeId.repoTypeid;
+  final int typeId = 1;
 
   @override
-  RepositoryModel read(BinaryReader reader) {
+  RepositoryEntity read(BinaryReader reader) {
     final id = reader.readInt();
     final name = reader.readString();
     final description = reader.readString();
     final stargazersCount = reader.readInt();
+    final isFavorite = reader.readBool();
 
-    return RepositoryModel(
+    return RepositoryEntity(
       id: id,
       name: name,
       description: description,
       stargazersCount: stargazersCount,
+      isFavorite: isFavorite,
     );
   }
 
   @override
-  void write(
-    BinaryWriter writer,
-    RepositoryModel obj,
-  ) {
+  void write(BinaryWriter writer, RepositoryEntity obj) {
     writer.writeInt(obj.id);
     writer.writeString(obj.name);
     writer.writeString(obj.description);
     writer.writeInt(obj.stargazersCount);
+    writer.writeBool(obj.isFavorite);
   }
 }

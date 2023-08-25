@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:repo_list/domain/entity/repositry_entity.dart';
+import 'package:repo_list/domain/favorite_repository.dart';
 import 'package:repo_list/domain/home_repository.dart';
+import 'package:repo_list/routes/app_pages.dart';
 
 class HomeController extends GetxController {
   final HomeRepository _homeRepository = Get.find();
+  final FavoriteRepository _favoriteRepository = Get.find();
   final RxList<RepositoryEntity> repositoryListRx = RxList.empty();
   final RxBool isLoading = false.obs;
   final RxBool isAllLoaded = false.obs;
@@ -45,7 +48,7 @@ class HomeController extends GetxController {
     _homeRepository
         .getHubbubList(
       offset: repositoryListRx.length,
-      query: searchText,
+      search: searchText,
     )
         .then((List<RepositoryEntity> hubbubList) {
       if (reset && repositoryListRx.isNotEmpty) {
@@ -87,7 +90,7 @@ class HomeController extends GetxController {
     focused.value = true;
   }
 
-  void toggleFavorite(RepositoryEntity repository) {
+  void toggleFavorite(RepositoryEntity repository)async {
     int index =
         repositoryListRx.indexWhere((element) => element.id == repository.id);
     if (index != -1) {
@@ -100,6 +103,17 @@ class HomeController extends GetxController {
       );
 
       repositoryListRx[index] = updatedRepo;
+
+      if (updatedRepo.isFavorite) {
+      await _favoriteRepository.addFavoriteRepository(repository: updatedRepo);
+    } else {
+      await _favoriteRepository.removeFavoriteRepository(repository: updatedRepo);
     }
+
+    }
+  }
+
+  void openFavoritePage() {
+    Get.toNamed(Routes.FAVORITE_PAGE);
   }
 }

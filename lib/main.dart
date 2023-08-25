@@ -5,6 +5,7 @@ import 'package:repo_list/routes/app_pages.dart';
 import 'package:repo_list/style/theme.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
     GetMaterialApp(
       title: "Application",

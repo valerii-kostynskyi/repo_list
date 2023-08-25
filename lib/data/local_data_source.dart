@@ -1,12 +1,17 @@
-import 'package:flutter/foundation.dart';
-import 'package:repo_list/data/model/repository_model.dart';
+import 'package:repo_list/domain/entity/repositry_entity.dart';
 
 abstract class LocalDataSource {
   Future init();
 
-  Future saveRepo(RepositoryModel repo);
+  Future<List<RepositoryEntity>> getFavoritesList();
 
-  Future clearLocalDB();
+  Future addToFavorites(RepositoryEntity repository);
 
-  ValueListenable repoListenable();
+  Future removeFromFavorites(RepositoryEntity repository);
+
+  Future<List<String>> getSearchHistory();
+
+  Future<void> addToSearchHistory(String searchQuery);
+
+  Future<void> clearSearchHistory();
 }

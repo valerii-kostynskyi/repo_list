@@ -17,17 +17,17 @@ class ItemRepositoryWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 16,
+        vertical: 4,
+        horizontal: 16,
       ),
       child: ListTile(
         onTap: onTap,
-        title: Text(
-          repositoryItem.name,
-        ),
+        title: Text(repositoryItem.name),
         subtitle: Text(
           repositoryItem.description,
           maxLines: 2,
           style: Theme.of(context).textTheme.bodySmall,
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,

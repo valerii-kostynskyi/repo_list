@@ -16,7 +16,7 @@ class HomeScreen extends GetView<HomeController> {
         title: const Text('Github repos list'),
         actions: [
           CustomButtonWidget(
-            onTap: () {},
+            onTap: () => controller.openFavoritePage(),
             icon: 'icon_star',
           ),
         ],
@@ -32,9 +32,7 @@ class HomeScreen extends GetView<HomeController> {
                 controller: controller.searchController,
                 onChanged: (value) => controller.search(value),
                 focused: controller.focused.value,
-                onTap: () {
-                  controller.changeFocus();
-                },
+                onTap: () => controller.changeFocus(),
               ),
             ),
           ),
