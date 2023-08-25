@@ -13,7 +13,6 @@ final lightTheme = ThemeData(
       fontWeight: FontWeight.w500,
     ),
   ),
-  
   textTheme: const TextTheme(
     headlineMedium: TextStyle(
       fontFamily: 'Raleway',
@@ -52,19 +51,19 @@ final lightTheme = ThemeData(
     secondary: AppColors.secondary,
     onSecondary: AppColors.placeholder,
     background: AppColors.main,
-    onBackground: AppColors.main,
+    onBackground: AppColors.divider,
     error: Colors.red,
     onError: Colors.red,
     surface: AppColors.main,
     onSurface: AppColors.main,
   ),
   listTileTheme: ListTileThemeData(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      tileColor: AppColors.main),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    tileColor: AppColors.main,
+  ),
   inputDecorationTheme: InputDecorationTheme(
-    focusColor: AppColors.secondary,
     hintStyle: const TextStyle(
       fontSize: 14,
       color: AppColors.placeholder,
@@ -85,6 +84,5 @@ final lightTheme = ThemeData(
       ),
     ),
     filled: true,
-    fillColor: AppColors.main,
   ),
 );

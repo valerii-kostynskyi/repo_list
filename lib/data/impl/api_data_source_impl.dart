@@ -14,6 +14,7 @@ class ApiDataSourceImpl implements ApiDataSource {
     _getConnect.baseUrl = apiUrl;
   }
 
+//TODO change it in future
   @override
   Future<List<RepositoryModel>> getRepositoriesList({
     required String search,
@@ -32,9 +33,12 @@ class ApiDataSourceImpl implements ApiDataSource {
       query: query,
     );
     final jsonData = json.decode(response.bodyString!);
-    final items = jsonData['items'] as List<dynamic>;
-    return items
-        .map<RepositoryModel>((item) => RepositoryModel.fromJson(item))
-        .toList();
+    if (jsonData['items'] is List<dynamic>) {
+      final items = jsonData['items'] as List<dynamic>;
+      return items
+          .map<RepositoryModel>((item) => RepositoryModel.fromJson(item))
+          .toList();
+    }
+    return [];
   }
 }

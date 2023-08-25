@@ -11,7 +11,11 @@ class HomeController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isAllLoaded = false.obs;
   final RxBool isFirstLoadingScreen = true.obs;
+
+  //search input
   final TextEditingController searchController = TextEditingController();
+  final RxBool isShowClearIcon = false.obs;
+  final RxBool focused = false.obs;
 
   //timer
   Timer? searchOnStoppedTyping;
@@ -27,9 +31,6 @@ class HomeController extends GetxController {
     bool reset = false,
     String searchText = '',
   }) {
-    // if (isLoading.value) {
-    //   return;
-    // }
     isLoading.value = true;
     if (reset) {
       repositoryListRx.clear();
@@ -61,8 +62,9 @@ class HomeController extends GetxController {
   }
 
   void search(String searchText) {
+    isShowClearIcon.value = true;
     if (searchText.isEmpty) {
-      // emptySearchField();
+      isShowClearIcon.value = false;
       return;
     }
 
@@ -71,6 +73,7 @@ class HomeController extends GetxController {
     }
 
     searchOnStoppedTyping = Timer(duration, () {
+      searchText = searchController.text;
       getRepositoryList(searchText: searchText, reset: true);
     });
   }
@@ -78,5 +81,25 @@ class HomeController extends GetxController {
   void clearSearchController() {
     searchController.clear();
     repositoryListRx.clear();
+  }
+
+  void changeFocus() {
+    focused.value = true;
+  }
+
+  void toggleFavorite(RepositoryEntity repository) {
+    int index =
+        repositoryListRx.indexWhere((element) => element.id == repository.id);
+    if (index != -1) {
+      RepositoryEntity updatedRepo = RepositoryEntity(
+        id: repository.id,
+        name: repository.name,
+        description: repository.description,
+        isFavorite: !repository.isFavorite,
+        stargazersCount: repository.stargazersCount,
+      );
+
+      repositoryListRx[index] = updatedRepo;
+    }
   }
 }
