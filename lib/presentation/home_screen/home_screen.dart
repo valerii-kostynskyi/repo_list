@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:repo_list/const.dart';
 import 'package:repo_list/presentation/home_screen/home_controller.dart';
 import 'package:repo_list/presentation/widget/custom_button_widget.dart';
 import 'package:repo_list/presentation/widget/custom_list.dart';
@@ -26,7 +25,7 @@ class HomeScreen extends GetView<HomeController> {
 
   AppBar _appBar() {
     return AppBar(
-      title: const Text(homeScreenAppBarTitle),
+      title: Text('txt_home_screen_app_bar_title'.tr),
       actions: [
         CustomButtonWidget(
           onTap: () => controller.navigateToFavoriteScreen(),
@@ -49,7 +48,7 @@ class HomeScreen extends GetView<HomeController> {
             children: [
               const SizedBox(height: 16),
               InputTextFieldWidget(
-                hintText: searchHint,
+                hintText: 'txt_search_hint'.tr,
                 isShowSuffixIconAsset: controller.isShowClearIcon.value,
                 controller: controller.searchController,
                 onChanged: (value) => controller.search(value),
@@ -62,7 +61,7 @@ class HomeScreen extends GetView<HomeController> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Text(
-                    whatWeFoundTitle,
+                    'txt_what_we_found_title'.tr,
                     style: Get.textTheme.headlineMedium,
                   ),
                 ),
