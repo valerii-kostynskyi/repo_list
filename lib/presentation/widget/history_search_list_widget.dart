@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:repo_list/const.dart';
+import 'package:repo_list/presentation/widget/custom_list.dart';
+import 'package:repo_list/presentation/widget/empty_screen.dart';
 
 class HistorySearchListWidget extends StatelessWidget {
-  final void Function(String)? onTap;
-  final List<String> list;
+  // Functions
+  final void Function(String) onTap;
+  final Function() onClearButtonTap;
+
+  // Rx
+  final RxList<String> list;
 
   const HistorySearchListWidget({
     super.key,
     required this.onTap,
+    required this.onClearButtonTap,
     required this.list,
   });
 
@@ -19,26 +27,46 @@ class HistorySearchListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'Search History',
-            style: Get.textTheme.headlineMedium,
+          const SizedBox(height: 16),
+          Obx(
+            () => Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  searchHistoryTitle,
+                  style: Get.textTheme.headlineMedium,
+                ),
+                if (list.isNotEmpty)
+                  InkWell(
+                    onTap: onClearButtonTap,
+                    child: Text(
+                      clearHistoryTitle,
+                      style: Get.textTheme.headlineMedium!.copyWith(
+                        decoration: TextDecoration.underline,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           Expanded(
-            child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: list.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Padding(
+            child: Obx(
+              () => CustomList(
+                emptyListMessage: const EmptyScreen(text: emptyHistoryMessage),
+                count: list.length,
+                onBuildItem: (index) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: ListTile(
                     title: Text(
                       list[index],
                       textAlign: TextAlign.left,
                     ),
-                    onTap: () => onTap?.call(list[index]),
+                    onTap: () => onTap.call(list[index]),
                   ),
-                );
-              },
+                ),
+              ),
             ),
           ),
         ],

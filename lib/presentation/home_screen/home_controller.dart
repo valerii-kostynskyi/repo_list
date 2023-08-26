@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:repo_list/domain/entity/repositry_entity.dart';
@@ -8,41 +7,49 @@ import 'package:repo_list/domain/home_repository.dart';
 import 'package:repo_list/routes/app_pages.dart';
 
 class HomeController extends GetxController {
+  // Dependencies
   final HomeRepository _homeRepository = Get.find();
   final FavoriteRepository _favoriteRepository = Get.find();
+
+  // Rx
   final RxList<RepositoryEntity> repositoryListRx = RxList.empty();
   final RxList<String> listSearch = RxList.empty();
   final RxBool isLoading = false.obs;
   final RxBool isAllLoaded = false.obs;
   final RxBool isFirstLoadingScreen = true.obs;
-
-  //search input
-  final TextEditingController searchController = TextEditingController();
   final RxBool isShowClearIcon = false.obs;
   final RxBool focused = false.obs;
 
-  //timer
+  // Search
+  final TextEditingController searchController = TextEditingController();
   Timer? searchOnStoppedTyping;
-  Duration duration = const Duration(milliseconds: 800);
+  final Duration duration = const Duration(milliseconds: 800);
 
   StreamSubscription<int>? _favoritesSubscription;
 
   @override
   void onInit() {
     super.onInit();
-    getRepositoryList();
-    getSearchRequstsList();
-
-    _favoritesSubscription =
-        _favoriteRepository.favoriteChanges.listen((int repoId) {
-      _updateFavoriteStatusForRepo(repoId);
-    });
+    _initializeController();
   }
 
   @override
   void onClose() {
     _favoritesSubscription?.cancel();
     super.onClose();
+  }
+
+  void _initializeController() {
+    getRepositoryList();
+    getSearchRequstsList();
+    _listenToFavoriteChanges();
+  }
+
+  void _listenToFavoriteChanges() {
+    _favoritesSubscription =
+        _favoriteRepository.favoriteChanges.listen((int repoId) {
+      _updateFavoriteStatusForRepo(repoId);
+    });
   }
 
   Future<void> getSearchRequstsList() async {
@@ -53,18 +60,7 @@ class HomeController extends GetxController {
     bool reset = false,
     String searchText = '',
   }) {
-    isLoading.value = true;
-    if (reset) {
-      repositoryListRx.clear();
-      isAllLoaded.value = false;
-      isFirstLoadingScreen.value = true;
-    }
-    if (isAllLoaded.value) {
-      isLoading.value = false;
-      return;
-    }
-
-    _homeRepository.addToSearchHistory(searchRequest: searchText);
+    _prepareForNewSearch(reset, searchText);
 
     _homeRepository
         .getHubbubList(
@@ -72,27 +68,55 @@ class HomeController extends GetxController {
       search: searchText,
     )
         .then((List<RepositoryEntity> hubbubList) {
-      if (reset && repositoryListRx.isNotEmpty) {
-        repositoryListRx.replaceRange(
-          0,
-          repositoryListRx.length,
-          hubbubList,
-        );
-      }
-      repositoryListRx.addAll(hubbubList);
-      isLoading.value = false;
-      isFirstLoadingScreen.value = false;
+      _updateRepositoryList(reset, hubbubList);
     });
   }
 
-  void search(String searchText) {
-    isShowClearIcon.value = true;
+  void _prepareForNewSearch(bool reset, String searchText) {
     isLoading.value = true;
-    if (searchText.isEmpty) {
-      isShowClearIcon.value = false;
+
+    if (reset) {
+      repositoryListRx.clear();
+      isAllLoaded.value = false;
+      isFirstLoadingScreen.value = true;
+    }
+
+    if (isAllLoaded.value) {
+      isLoading.value = false;
       return;
     }
 
+    _homeRepository.addToSearchHistory(searchRequest: searchText);
+  }
+
+  void _updateRepositoryList(bool reset, List<RepositoryEntity> hubbubList) {
+    if (reset && repositoryListRx.isNotEmpty) {
+      repositoryListRx.replaceRange(
+        0,
+        repositoryListRx.length,
+        hubbubList,
+      );
+    }
+    repositoryListRx.addAll(hubbubList);
+    isLoading.value = false;
+    isFirstLoadingScreen.value = false;
+  }
+
+  void search(String searchText) {
+    _handleSearchVisuals(searchText);
+    _debounceSearch(searchText);
+  }
+
+  void _handleSearchVisuals(String searchText) {
+    isShowClearIcon.value = true;
+    isLoading.value = true;
+
+    if (searchText.isEmpty) {
+      isShowClearIcon.value = false;
+    }
+  }
+
+  void _debounceSearch(String searchText) {
     if (searchOnStoppedTyping != null) {
       searchOnStoppedTyping!.cancel();
     }
@@ -106,6 +130,7 @@ class HomeController extends GetxController {
   void clearSearchController() {
     searchController.clear();
     repositoryListRx.clear();
+    getSearchRequstsList();
   }
 
   void changeFocus() {
@@ -150,15 +175,21 @@ class HomeController extends GetxController {
     }
   }
 
+  void navigateToFavoriteScreen() {
+    Get.toNamed(Routes.FAVORITE_PAGE);
+  }
+
   void addValueToSearchBar(String value) {
     searchController.text = value;
     searchController.selection = TextSelection.fromPosition(
       TextPosition(offset: searchController.text.length),
     );
     getRepositoryList(searchText: value);
+    changeFocus();
   }
 
-  void openFavoritePage() {
-    Get.toNamed(Routes.FAVORITE_PAGE);
+  void clearHistory() {
+    _homeRepository.clearSearchHistory();
+    listSearch.clear();
   }
 }

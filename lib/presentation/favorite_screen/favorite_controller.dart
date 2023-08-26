@@ -3,7 +3,10 @@ import 'package:repo_list/domain/entity/repositry_entity.dart';
 import 'package:repo_list/domain/favorite_repository.dart';
 
 class FavoriteController extends GetxController {
+  // Dependencies
   final FavoriteRepository _favoriteRepository = Get.find();
+
+  // Rx
   final RxList<RepositoryEntity> repositoryListRx = RxList.empty();
   final RxBool isLoading = false.obs;
   final RxBool isAllLoaded = false.obs;
@@ -14,7 +17,7 @@ class FavoriteController extends GetxController {
     getFavoritesList();
   }
 
-  getFavoritesList() async {
+  Future<void> getFavoritesList() async {
     isLoading.value = true;
     try {
       final List<RepositoryEntity> favRepositories =
@@ -27,7 +30,7 @@ class FavoriteController extends GetxController {
     }
   }
 
-  removeFromFavorite(RepositoryEntity repository) async {
+  Future<void> removeFromFavorite(RepositoryEntity repository) async {
     try {
       repositoryListRx.remove(repository);
       await _favoriteRepository.removeFavoriteRepository(

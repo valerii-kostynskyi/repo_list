@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+import 'package:repo_list/style/app_colors.dart';
 
 class CustomList extends StatelessWidget {
   final double? height;
@@ -63,7 +65,9 @@ class CustomList extends StatelessWidget {
 
   Widget loadingPanel() {
     return const Center(
-      child: CircularProgressIndicator(),
+      child: CupertinoActivityIndicator(
+        color: AppColors.divider,
+      ),
     );
   }
 
