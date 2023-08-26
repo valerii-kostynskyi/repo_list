@@ -3,7 +3,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:repo_list/const.dart';
 import 'package:repo_list/presentation/loading/loading_controller.dart';
 
 class LoadingScreen extends GetView<LoadingController> {
@@ -26,7 +25,7 @@ class LoadingScreen extends GetView<LoadingController> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            appTitle,
+            'txt_app_title'.tr,
             style: Get.textTheme.bodySmall!
                 .copyWith(color: Get.theme.scaffoldBackgroundColor),
           ),

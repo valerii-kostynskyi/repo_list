@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:repo_list/const.dart';
 import 'package:repo_list/presentation/favorite_screen/favorite_controller.dart';
 import 'package:repo_list/presentation/widget/custom_button_widget.dart';
 import 'package:repo_list/presentation/widget/custom_list.dart';
@@ -20,7 +19,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
 
   AppBar _appBar() {
     return AppBar(
-      title: const Text(favoriteScreenAppBarTitle),
+      title: Text('txt_favorite_screen_app_bar_title'.tr),
       centerTitle: true,
       leadingWidth: 80,
       leading: CustomButtonWidget(
@@ -35,7 +34,7 @@ class FavoriteScreen extends GetView<FavoriteController> {
       () => Padding(
         padding: const EdgeInsets.only(top: 16),
         child: CustomList(
-          emptyListMessage: const EmptyScreen(text: emptyFavoriteMessage),
+          emptyListMessage: EmptyScreen(text: 'txt_empty_favorite_message'.tr),
           bottomSpace: 0,
           count: controller.repositoryListRx.length,
           onBuildItem: (index) => ItemRepositoryWidget(

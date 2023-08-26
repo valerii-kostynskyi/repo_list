@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:repo_list/const.dart';
 import 'package:repo_list/presentation/widget/custom_list.dart';
 import 'package:repo_list/presentation/widget/empty_screen.dart';
 
@@ -34,14 +33,14 @@ class HistorySearchListWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  searchHistoryTitle,
+                  'txt_search_history_title'.tr,
                   style: Get.textTheme.headlineMedium,
                 ),
                 if (list.isNotEmpty)
                   InkWell(
                     onTap: onClearButtonTap,
                     child: Text(
-                      clearHistoryTitle,
+                      'txt_clear_history_title'.tr,
                       style: Get.textTheme.headlineMedium!.copyWith(
                         decoration: TextDecoration.underline,
                         fontSize: 12,
@@ -54,7 +53,8 @@ class HistorySearchListWidget extends StatelessWidget {
           Expanded(
             child: Obx(
               () => CustomList(
-                emptyListMessage: const EmptyScreen(text: emptyHistoryMessage),
+                emptyListMessage:
+                    EmptyScreen(text: 'txt_empty_history_message'.tr),
                 count: list.length,
                 onBuildItem: (index) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
