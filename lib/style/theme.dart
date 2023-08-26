@@ -61,7 +61,7 @@ final lightTheme = ThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
     ),
-    tileColor: AppColors.main,
+    tileColor: AppColors.divider,
   ),
   inputDecorationTheme: InputDecorationTheme(
     hintStyle: const TextStyle(

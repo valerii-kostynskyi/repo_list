@@ -28,6 +28,7 @@ class InputTextFieldWidget extends StatelessWidget {
   final TextStyle? hintStyle;
   final bool focused;
   final Function()? onTap;
+  final Function()? onSuffixTap;
 
   InputTextFieldWidget({
     Key? key,
@@ -52,6 +53,7 @@ class InputTextFieldWidget extends StatelessWidget {
     this.hintStyle,
     this.focused = false,
     this.onTap,
+    this.onSuffixTap,
   }) : super(key: key) {
     if (focused) {
       focusNode.requestFocus();
@@ -95,15 +97,16 @@ class InputTextFieldWidget extends StatelessWidget {
                   color: Get.theme.colorScheme.primary,
                 ),
               ),
-              suffixIcon: isShowSuffixIconAsset
+              suffixIcon: focused
                   ? Padding(
                       padding: const EdgeInsets.only(
                         right: 15.0,
                         left: 10.0,
                       ),
                       child: SVGIcon(
+                        onTap: onSuffixTap,
                         icon: 'icon_close',
-                        color: Get.theme.dividerColor,
+                        color: Get.theme.colorScheme.primary,
                       ),
                     )
                   : null,
